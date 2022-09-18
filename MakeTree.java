@@ -1,26 +1,48 @@
 package RunTimeTerror;
 
+import java.util.ArrayList;
+import java.security.MessageDigest;
+import java.math.BigInteger;
+
 public class MakeTree {
-    
+    public Node createMerkleTree(ArrayList<Node> children) {
+        ArrayList<Node> merkleRoot = merkleTree(children);
+        return merkleRoot.get(0);
+    }
+
+    private ArrayList<Node> merkleTree(ArrayList<Node> children) {
+        // edge case of 1 child
+        if (children.size() == 1)
+            return children;
+        ArrayList<Node> parentList = new ArrayList<>();
+        // iterate 2 at time through children to make a parent
+        for (int i = 0; i < children.size(); i += 2) {
+            Node left = children.get(i);
+            Node right = children.get(i + 1);
+            String parentHash = getSHA(left.getContent().getHash().concat(right.getContent().getHash()));
+            Content parentContent = new Content(parentHash);
+            parentList.add(new Node(true, parentContent, left, right));
+        }
+        if (children.size() % 2 == 1) {
+            Node last = children.get(children.size() - 1);
+            String parentHash = last.getContent().getHash();
+            Content parentContent = new Content(parentHash);
+            parentList.add(new Node(true, parentContent, last, null));
+        }
+        return merkleTree(parentList);
+    }
+
+    public static String getSHA(String input) {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] messageDigest = md.digest(input.getBytes());
+        BigInteger no = new BigInteger(1, messageDigest);
+        String hashtext = no.toString(16);
+
+        while (hashtext.length() < 32) {
+            hashtext = "0" + hashtext;
+        }
+
+        return hashtext;
+    }
+
 }
-
-
-// basically dfs
-// inputs: list of nodes (leaves initially)
-// make q from list of nodes
-// int curLen = q.size();
-// while q.size <= 1: // if q size is 1, we have our root  
-//     currentSize = q.size(); //iterate through currsize because we will be adding to q as we make nodes
-//     for(int i = 0; i <currentSize; i+= 2 ){
-//         leaf1 = q[i]
-//         leaf2;
-//         IF i + 1< currentSize :   //might be out of bounds
-//              leaf2 = q[i+1] 
-//         else 
-//              leaf2 = NUll;
-//         get the hashes of both leaves (if leaf 2 == null, set second hash equal to  "")
-//         make a new node (newNode), 
-//         set newNode's hash to SHA256( leaf1.hash + leaf2.hash()) 
-//         set newNode.left = leaf1
-//         set newNode.right = leaf2 (if leaf2 != null)
-//         append newNode to the RIGHT of quue 
