@@ -1,3 +1,29 @@
+
+/**
+ * Use for non-lead nodes
+ * Parent Class for LeafContent
+ * 
+ */
+public class Content {
+    private String hash;
+    private String address;
+    private String balance;
+
+    public Content(String hash, String address, String balance){
+        this.hash = hash;
+        this.address = address;
+        this.balance = balance;
+    }
+    public String getHash(){
+        return hash;
+    }
+    public String getAddress(){
+        return address;
+    }
+    public String getBalance(){
+        return balance;
+    }
+}
 //package RunTimeTerror;
 
 import java.io.File;
@@ -84,4 +110,36 @@ public class MakeTree {
         return hashtext;
     }
 
+}
+
+
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+class Node{
+    private Boolean isLeaf;
+    private Content content;
+    private Node left;
+    private Node right;
+
+    public Node(Boolean isLeaf, Content content, Node left, Node right){
+        this.isLeaf = isLeaf;
+        this.content = content;
+        this.left = left;
+        this.right = right;
+    }
+    public Boolean getIsLeaf(){
+        return isLeaf;
+    }
+    public Content getContent(){
+        return content;
+    }
+    public Node getLeft(){
+        return left;
+    }
+    public Node getRight(){
+        return right;
+    }
 }
