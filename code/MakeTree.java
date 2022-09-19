@@ -1,4 +1,4 @@
-package RunTimeTerror;
+package code;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.math.BigInteger;
 
 public class MakeTree {
     public static void main(String[] args) throws Exception{
-        File file = new File("input.txt");
+        File file = new File("code/input.txt");
         Scanner sc = new Scanner(file);
         ArrayList<Node> nodes = new ArrayList<Node>();
 
