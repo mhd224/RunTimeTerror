@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
+import java.util.Scanner;
 
 public class MakeTree {
     public static void main(String[] args) throws Exception{
-        File file = new File("code/input.txt");
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter test file name (i.e code/input.txt)");
+        String filename = input.nextLine();
+        File file = new File(filename);
         Scanner sc = new Scanner(file);
         ArrayList<Node> nodes = new ArrayList<Node>();
 
