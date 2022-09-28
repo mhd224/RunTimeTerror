@@ -10,6 +10,8 @@ import java.math.BigInteger;
 import java.util.Scanner;
 
 public class MakeTree {
+    String result = "";
+
     public static void main(String[] args) throws Exception{
         Scanner input = new Scanner(System.in);
         System.out.println("Enter test file name (i.e code/input.txt)");
@@ -35,7 +37,7 @@ public class MakeTree {
             nodes.add(curNode);
         }
         ArrayList<Node> merkleRoot = merkleTree(nodes);
-        printMerkleTree(merkleRoot.get(0));
+        //printMerkleTree(merkleRoot.get(0));
         return merkleRoot.get(0);
     }
 
@@ -62,16 +64,17 @@ public class MakeTree {
         return merkleTree(parentList);
     }
 
-    public static void printMerkleTree(Node root) throws Exception{
+    public String printMerkleTree(Node root) throws Exception{
         if (root == null){
-            return;
+            return result;
         }
         if (root.getLeft() == null && root.getRight() == null){
             //System.out.println(root.getContent().getHash());
-            System.out.println(root.getContent().getAddress() + " " + root.getContent().getBalance() ) ;
+            result += (root.getContent().getAddress() + " " + root.getContent().getBalance() ) ;
         }
-        printMerkleTree(root.getLeft());
-        printMerkleTree(root.getRight());
+        result += printMerkleTree(root.getLeft());
+        result += printMerkleTree(root.getRight());
+        return result;
     }
 
     public static String getSHA(String input) throws NoSuchAlgorithmException{

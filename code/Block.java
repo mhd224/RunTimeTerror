@@ -22,17 +22,21 @@ public class Block {
     private int time;
     private BigInteger targetBoundary = BigInteger.valueOf( (long) Math.pow(2, 255) );
     private String nonce;
-    private ArrayList<Node> ledger;
+    private Node ledgerRoot;
 
-    public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time ,ArrayList<Node> ledger) throws NoSuchAlgorithmException{
+    public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time ,Node ledgerRoot) throws NoSuchAlgorithmException{
         this.hashOfPrevBlockHeader = hashOfPrevBlockHeader;
         this.hashOfRoot = hashOfRoot;
         this.time = time;
         this.nonce = nonce;
+        this.ledgerRoot = ledgerRoot;
         while(true){
             String curNonce = getRandomNonce(8);
             String hashInput = hashOfRoot + curNonce;
-            if ( this.targetBoundary.compareTo(getSHA(hashInput)) >= 0 ){  //works 50 percent of time
+            String hashOutput = getSHA(hashInput);
+            BigInteger result = new BigInteger(hashOutput);
+
+            if ( this.targetBoundary.compareTo(result) >= 0 ){  //works 50 percent of time
                 this.nonce = curNonce;
                 break;
             }
@@ -40,8 +44,17 @@ public class Block {
 
     }
 
-    public void printNoBody(String fileName){
+    public String getHeaderHash() throws NoSuchAlgorithmException {
+        String fullHeader = "";
+        String timestring = String.valueOf(time);
+        String boundaryString = String.valueOf(targetBoundary);
+        fullHeader = hashOfPrevBlockHeader + hashOfRoot + timestring +  boundaryString + nonce;
+        fullHeader = getSHA(fullHeader);
+        return fullHeader;
+    }
 
+    public void printNoBody(String fileName){
+    
 
     }
     public void printWithBody(String fileName){
@@ -62,7 +75,7 @@ public class Block {
 
 
 
-    public static BigInteger getSHA(String input) throws NoSuchAlgorithmException{
+    public static String getSHA(String input) throws NoSuchAlgorithmException{
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] messageDigest = md.digest(input.getBytes());
         BigInteger no = new BigInteger(1, messageDigest);
@@ -71,7 +84,28 @@ public class Block {
         while (hashtext.length() < 32) {
             hashtext = "0" + hashtext;
         }
-        BigInteger result = new BigInteger(hashtext);
-        return result;
+        return hashtext;
     }
+
+    public String getHashPrevBlock() {
+        return this.hashOfPrevBlockHeader;
+    }
+    public String getHashOfRoot() {
+        return this.hashOfRoot;
+    }
+    public int getTime() {
+        return this.time;
+    }
+    public BigInteger getBoundary() {
+        return this.targetBoundary;
+    }
+    public String getNonce() {
+        return this.nonce;
+    
+    }
+    public Node getLedgerRoot() {
+        return this.ledgerRoot;
+        
+    }
+
 }
