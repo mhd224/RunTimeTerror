@@ -59,7 +59,7 @@ public class MakeBlock {
 
         ArrayList<Block> blockArray = new ArrayList<>();
 
-        for (int i = 0; i <= fileCounter; i++) {
+        for (int i = 0; i < fileCounter; i++) {
             String hashOfPrevBlockHeader;
             if(i == 0) {
                 hashOfPrevBlockHeader = "0";
@@ -76,7 +76,7 @@ public class MakeBlock {
     public static void printBlocks(ArrayList<Block> blockArray, String filename, Boolean printLedger, int fileCounter) throws Exception {
         File outfile = new File(filename +".block.out");
         FileWriter myWriter = new FileWriter(filename +".block.out");
-        for (int i = fileCounter; i>= 0; i--) {
+        for (int i = fileCounter-1; i>= 0; i--) {
             myWriter.write("BEGIN BLOCK\n");
             myWriter.write("BEGIN HEADER\n");
             myWriter.write(blockArray.get(i).getHashPrevBlock() + "\n");
