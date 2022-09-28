@@ -38,14 +38,7 @@ public class MakeBlock {
             }
             System.out.println("Enter new test file name OR press ENTER to finish");
         }
-        // System.out.println("Would you like to print the ledger? (y/n): ");
-        // String b = "";
-        // while((b = input.nextLine()) != "y" || b != "n") {
-        //     System.out.println("Would you like to print the ledger? (y/n): ");
-        // }
-        // if (b == "y") {
-        //     printLedger = true;
-        // }
+        System.out.println(fileCounter);
         while (true) {
             System.out.println("Would you like to print the ledger? (y/n): ");
             String str = input.next();

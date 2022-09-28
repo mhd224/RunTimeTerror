@@ -36,8 +36,6 @@ public class Block {
             String curNonce = getRandomNonce(8);
             String hashInput = hashOfRoot + curNonce;
             BigInteger hashOutput = getSHAint(hashInput);
-            //BigInteger result = new BigInteger(hashOutput.getBytes());
-            System.out.println(targetBoundary + " " + hashOutput);
 
             if ( this.targetBoundary.compareTo(hashOutput) >= 0 ){  //works 50 percent of time
                 this.nonce = curNonce;
@@ -57,15 +55,6 @@ public class Block {
         fullHeader = getSHA(fullHeader);
         return fullHeader;
     }
-
-    public void printNoBody(String fileName){
-    
-
-    }
-    public void printWithBody(String fileName){
-
-    }
-
 
     public static String getRandomNonce(int length) { // http://www.java2s.com/example/java/java.util/get-random-nonce-by-length.html
         StringBuffer buffer = new StringBuffer( "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");

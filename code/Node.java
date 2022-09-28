@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.management.RuntimeErrorException;
 
 class Node {
-    String result = "";
     private Boolean isLeaf;
     private Content content;
     private Node left;
@@ -32,12 +31,13 @@ class Node {
         return right;
     }
     public String printMerkleTree(Node root) throws Exception{
+        String result = "";
         if (root == null){
             return result;
         }
         if (root.getLeft() == null && root.getRight() == null){
             //System.out.println(root.getContent().getHash());
-            result += (root.getContent().getAddress() + " " + root.getContent().getBalance() ) ;
+            result += (root.getContent().getAddress() + " " + root.getContent().getBalance() + "\n") ;
         }
         result += printMerkleTree(root.getLeft());
         result += printMerkleTree(root.getRight());
