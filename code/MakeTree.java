@@ -14,6 +14,11 @@ public class MakeTree {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter test file name (i.e code/input.txt)");
         String filename = input.nextLine();
+        createMerkleTree(filename);
+        
+    }
+
+    public static Node createMerkleTree(String filename) throws Exception{
         File file = new File(filename);
         Scanner sc = new Scanner(file);
         ArrayList<Node> nodes = new ArrayList<Node>();
@@ -29,30 +34,11 @@ public class MakeTree {
 
             nodes.add(curNode);
         }
-        // for(int i = 0 ; i < nodes.size(); i ++ ){
-        //     System.out.print(i + " ");
-        //     System.out.println(nodes.get(i).getContent().getBalance());
-        // }
-        createMerkleTree(nodes);
-    }
-
-
-    public static Node createMerkleTree(ArrayList<Node> children) throws Exception{
-        ArrayList<Node> merkleRoot = merkleTree(children);
+        ArrayList<Node> merkleRoot = merkleTree(nodes);
         printMerkleTree(merkleRoot.get(0));
         return merkleRoot.get(0);
     }
-    public static void printMerkleTree(Node root) throws Exception{
-        if (root == null){
-            return;
-        }
-        if (root.getLeft() == null && root.getRight() == null){
-            //System.out.println(root.getContent().getHash());
-            System.out.println(root.getContent().getAddress() + " " + root.getContent().getBalance() ) ;
-        }
-        printMerkleTree(root.getLeft());
-        printMerkleTree(root.getRight());
-    }
+
 
     private static ArrayList<Node> merkleTree(ArrayList<Node> children) throws Exception{
         // edge case of 1 child
@@ -74,6 +60,18 @@ public class MakeTree {
             parentList.add(new Node(true, parentContent, last, null));
         }
         return merkleTree(parentList);
+    }
+
+    public static void printMerkleTree(Node root) throws Exception{
+        if (root == null){
+            return;
+        }
+        if (root.getLeft() == null && root.getRight() == null){
+            //System.out.println(root.getContent().getHash());
+            System.out.println(root.getContent().getAddress() + " " + root.getContent().getBalance() ) ;
+        }
+        printMerkleTree(root.getLeft());
+        printMerkleTree(root.getRight());
     }
 
     public static String getSHA(String input) throws NoSuchAlgorithmException{
