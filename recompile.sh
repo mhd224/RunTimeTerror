@@ -1,3 +1,4 @@
+rm -f *.block.out
 rm -f code/*.classs
 javac code/Content.java
 javac code/Node.java
