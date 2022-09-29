@@ -20,7 +20,6 @@ public class Block {
     private String hashOfPrevBlockHeader;
     private String hashOfRoot;
     private int time;
-    //private BigInteger targetBoundary = BigInteger.valueOf((long)Math.pow(2, 255));
     private BigInteger targetBoundary = new BigInteger("57896045000000000000000000000000000000000000000000000000000000000000000000000");
     private String nonce;
     private Node ledgerRoot;
@@ -40,7 +39,6 @@ public class Block {
             if ( this.targetBoundary.compareTo(hashOutput) >= 0 ){  //works 50 percent of time
                 this.nonce = curNonce;
                 nonceFound = false;
-                System.out.println("Nonce found!");
                 break;
             }
         }
@@ -102,11 +100,9 @@ public class Block {
     }
     public String getNonce() {
         return this.nonce;
-    
     }
     public Node getLedgerRoot() {
         return this.ledgerRoot;
-
     }
 
 }

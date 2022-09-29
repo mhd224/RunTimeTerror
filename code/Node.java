@@ -36,7 +36,6 @@ class Node {
             return result;
         }
         if (root.getLeft() == null && root.getRight() == null){
-            //System.out.println(root.getContent().getHash());
             result += (root.getContent().getAddress() + " " + root.getContent().getBalance() + "\n") ;
         }
         result += printMerkleTree(root.getLeft());

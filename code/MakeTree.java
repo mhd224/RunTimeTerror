@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.Scanner;
 
 public class MakeTree {
-    //String result = "";
 
     public static void main(String[] args) throws Exception{
         Scanner input = new Scanner(System.in);
@@ -37,7 +36,6 @@ public class MakeTree {
             nodes.add(curNode);
         }
         ArrayList<Node> merkleRoot = merkleTree(nodes);
-        //printMerkleTree(merkleRoot.get(0));
         return merkleRoot.get(0);
     }
 
@@ -70,7 +68,6 @@ public class MakeTree {
             return result;
         }
         if (root.getLeft() == null && root.getRight() == null){
-            //System.out.println(root.getContent().getHash());
             result += (root.getContent().getAddress() + " " + root.getContent().getBalance()) ;
         }
         result += printMerkleTree(root.getLeft());

@@ -24,7 +24,7 @@ public class MakeBlock {
         int fileCounter =0;
         String firstFile = "";
         Boolean printLedger = false;
-        System.out.println("Enter test file name (i.e code/input.txt)");
+        System.out.println("Enter test file name (i.e code/input[1-5].txt)");
         while ( (fileName = input.nextLine()).isEmpty() == false) {
             try{ 
                 rootNodes.add(treeMaker.createMerkleTree(fileName));
@@ -38,7 +38,7 @@ public class MakeBlock {
             }
             System.out.println("Enter new test file name OR press ENTER to finish");
         }
-        System.out.println(fileCounter);
+        System.out.println("Number of files being read: " + fileCounter);
         while (true) {
             System.out.println("Would you like to print the ledger? (y/n): ");
             String str = input.next();
@@ -67,8 +67,12 @@ public class MakeBlock {
 
     }
     public static void printBlocks(ArrayList<Block> blockArray, String filename, Boolean printLedger, int fileCounter) throws Exception {
-        File outfile = new File(filename +".block.out");
-        FileWriter myWriter = new FileWriter(filename +".block.out");
+        //block objects already made
+        String trimmedFileName = filename.substring(0, filename.lastIndexOf('.'));
+        trimmedFileName = trimmedFileName +".block.out";
+
+        //print block objects to FIRST FileName.block.out
+        FileWriter myWriter = new FileWriter(trimmedFileName);
         for (int i = fileCounter-1; i>= 0; i--) {
             myWriter.write("BEGIN BLOCK\n");
             myWriter.write("BEGIN HEADER\n");
@@ -85,9 +89,5 @@ public class MakeBlock {
 
         }
         myWriter.close();
-        // close(outfile);
-        //make block objects
-
-        //print block objects to FIRST FileName.block.o
     }
 }
