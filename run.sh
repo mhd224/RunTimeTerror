@@ -1,5 +1,5 @@
-#sh recompile.sh
+sh recompile.sh
 # java code/MakeTree
-java code/MakeBlock
+java code/ValidateBlock
 rm -f code/*.class
 # rm -f *.block.out

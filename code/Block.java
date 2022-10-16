@@ -23,6 +23,7 @@ public class Block {
     private BigInteger targetBoundary = new BigInteger("57896045000000000000000000000000000000000000000000000000000000000000000000000");
     private String nonce;
     private Node ledgerRoot;
+    public BigInteger curTarget;
 
     public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time ,Node ledgerRoot) throws NoSuchAlgorithmException{
         this.hashOfPrevBlockHeader = hashOfPrevBlockHeader;
@@ -30,19 +31,29 @@ public class Block {
         this.time = time;
         //this.nonce = nonce;
         this.ledgerRoot = ledgerRoot;
-        boolean nonceFound = true;
-        while(nonceFound){
+        boolean nonceNotFound = true;
+        while(nonceNotFound){
             String curNonce = getRandomNonce(8);
             String hashInput = hashOfRoot + curNonce;
             BigInteger hashOutput = getSHAint(hashInput);
 
             if ( this.targetBoundary.compareTo(hashOutput) >= 0 ){  //works 50 percent of time
                 this.nonce = curNonce;
-                nonceFound = false;
+                nonceNotFound = false;
                 break;
             }
         }
+    }
+    // for validation, all fields are already provided
+    public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time, Node ledgerRoot, BigInteger curTarget, String nonce) throws Exception{
+        this.hashOfPrevBlockHeader = hashOfPrevBlockHeader;
+        this.hashOfRoot = hashOfRoot;
+        this.time = time;
+        this.ledgerRoot = ledgerRoot;
+        this.curTarget = curTarget;
+        this.nonce = nonce;
 
+        
     }
 
     public String getHeaderHash() throws NoSuchAlgorithmException {

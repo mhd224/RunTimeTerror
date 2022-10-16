@@ -11,13 +11,13 @@ import java.util.Scanner;
 
 public class MakeTree {
 
-    public static void main(String[] args) throws Exception{
-        Scanner input = new Scanner(System.in);
-        System.out.println("Enter test file name (i.e code/input.txt)");
-        String filename = input.nextLine();
-        createMerkleTree(filename);
+    // public static void main(String[] args) throws Exception{
+    //     Scanner input = new Scanner(System.in);
+    //     System.out.println("Enter test file name (i.e code/input.txt)");
+    //     String filename = input.nextLine();
+    //     createMerkleTree(filename);
         
-    }
+    // }
 
     public static Node createMerkleTree(String filename) throws Exception{
         File file = new File(filename);
