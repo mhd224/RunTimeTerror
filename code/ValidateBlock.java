@@ -106,15 +106,18 @@ public class ValidateBlock {
     }
 
     public static boolean validateChain(ArrayList<Block> blocks) throws Exception {
-        String hashOfPrevBlockHeader = blocks.get(0).getHashOfRoot();
-        for (Block curBlock : blocks) {
-            if (!curBlock.getHashPrevBlock().equals(hashOfPrevBlockHeader)) { // if prevHash not matching false!
+        // working backwards
+        // blocks is in newest to oldest order
+        String hashOfPrevBlockHeader = blocks.get(0).getHashPrevBlock();
+        for (int i = 1; i < blocks.size(); i++) {
+            Block curBlock = blocks.get(i);
+            if (!curBlock.getHeaderHash().equals(hashOfPrevBlockHeader)) { // if prevHash not matching false!
                 return false;
             }
             if (validateBlock(curBlock) == false) { // check if block is validated
                 return false;
             }
-            hashOfPrevBlockHeader = curBlock.getHashOfRoot(); // update prevHash
+            hashOfPrevBlockHeader = curBlock.getHeaderHash(); // update prevHash
         }
         return true;
     }
@@ -125,9 +128,11 @@ public class ValidateBlock {
             System.out.println("Provided root is invalid for block @ time " + b.getTime());
             return false;
         }
+
         String hashInput = b.getHashOfRoot() + b.getNonce();
         BigInteger hashOutput = getSHAint(hashInput);
-        if (b.curTarget.compareTo(hashOutput) >= 0) { // check if nonce was correcl
+
+        if (b.curTarget.compareTo(hashOutput) <= 0) { // check if nonce was incorrect
             System.out.println("Nonce is invalid for block @ time " + b.getTime());
             return false;
         }
