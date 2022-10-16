@@ -1,4 +1,5 @@
 package code;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -14,47 +15,48 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 import java.util.Scanner;
+
 public class ValidateBlock {
-    public static void main(String[] args) throws Exception{
-        //ask user for input file
-        Scanner input = new Scanner(System.in);        
+    public static void main(String[] args) throws Exception {
+        // ask user for input file
+        Scanner input = new Scanner(System.in);
         System.out.println("Please print file name that hold blockchain");
         String fileName = input.nextLine();
         ArrayList<Block> blocks = new ArrayList<Block>();
-        if ( readBlockChain(fileName, blocks) == false){
+        if (readBlockChain(fileName, blocks) == false) {
             System.out.println("Invalid format. Blockchain could not be read");
             return;
         }
         System.out.println("Validating blockchain...");
-        if ( validateChain(blocks) == false){
+        if (validateChain(blocks) == false) {
             System.out.println("Invalid blockcahin. Blockchain is invalid");
             return;
         }
         System.out.println("Blockcahin validated.");
-        menuRoutine(input);        //do menu routine
+        menuRoutine(input); // do menu routine
     }
-    public static boolean readBlockChain(String filename, ArrayList<Block> blocks ) throws Exception{
+
+    public static boolean readBlockChain(String filename, ArrayList<Block> blocks) throws Exception {
         File file = new File(filename);
         Scanner sc = new Scanner(file);
         int blockCounter = 0;
-        // System.out.println( sc.nextLine() ) ; //flush
-        // System.out.println( sc.nextLine() ) ; //flush
-        // System.out.println( sc.nextLine() ) ; //flush
 
-        try {                   // need 8 lines of header
-            while( sc.hasNext() ) {  // each loops makes 1 block
+        try { // need 8 lines of header
+            while (sc.hasNext()) { // each loops makes 1 block
                 String beginBlockLine = "";
-                beginBlockLine= sc.nextLine();
-                if (beginBlockLine == ""){  // empty 
+                beginBlockLine = sc.nextLine();
+                if (beginBlockLine == "") { // empty
                     continue;
                 }
-                if ( !beginBlockLine.equals("BEGIN BLOCK") ){
-                    System.out.println("Header not formatted correctly at block " + blockCounter +  ". BEGIN BLOCK expected. Received " + beginBlockLine);
+                if (!beginBlockLine.equals("BEGIN BLOCK")) {
+                    System.out.println("Header not formatted correctly at block " + blockCounter
+                            + ". BEGIN BLOCK expected. Received " + beginBlockLine);
                     return false;
                 }
                 String beginHeaderLine = sc.nextLine();
-                if ( !beginHeaderLine.equals("BEGIN HEADER") ){
-                    System.out.println("Header not formatted correctly at block " + blockCounter +  ".  BEGIN HEADER expected. Received " + beginHeaderLine);
+                if (!beginHeaderLine.equals("BEGIN HEADER")) {
+                    System.out.println("Header not formatted correctly at block " + blockCounter
+                            + ".  BEGIN HEADER expected. Received " + beginHeaderLine);
                     return false;
                 }
                 String hashOfPrevBlockHeader = sc.nextLine();
@@ -63,18 +65,21 @@ public class ValidateBlock {
                 String targetBounString = sc.nextLine();
                 String nonce = sc.nextLine();
                 String endHeaderLine = sc.nextLine();
-                if ( !endHeaderLine.equals("END HEADER") ){
-                    System.out.println("Header not formatted correctly at block " + blockCounter +  ". END HEADER expected. Received " + endHeaderLine);
+                if (!endHeaderLine.equals("END HEADER")) {
+                    System.out.println("Header not formatted correctly at block " + blockCounter
+                            + ". END HEADER expected. Received " + endHeaderLine);
                     return false;
                 }
                 ArrayList<Node> nodes = new ArrayList<Node>();
-                while(true){
+                while (true) {
                     String curString = sc.nextLine();
-                    if ( curString.equals("END BLOCK")){
+                    if (curString.equals("END BLOCK")) {
+                        if (sc.hasNextLine())
+                            sc.nextLine();
                         break;
                     }
                     String[] splitted = curString.split(" ");
-                    if (splitted.length != 2){
+                    if (splitted.length != 2) {
                         System.out.println("Invalid account entry");
                     }
                     String address = splitted[0];
@@ -85,14 +90,14 @@ public class ValidateBlock {
                     nodes.add(curNode);
                 }
                 ArrayList<Node> merkleRoot = merkleTree(nodes);
-                Node root = merkleRoot.get(0);  
+                Node root = merkleRoot.get(0);
                 int timeAsInt = Integer.valueOf(time);
-                Block newBlock = new Block(hashOfPrevBlockHeader, hashOfRoot, timeAsInt, root, new BigInteger(targetBounString), nonce);
+                Block newBlock = new Block(hashOfPrevBlockHeader, hashOfRoot, timeAsInt, root,
+                        new BigInteger(targetBounString), nonce);
                 blocks.add(newBlock);
                 blockCounter += 1;
-            } 
-        }
-        catch (Exception e){
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Block not formatted correclty");
             return false;
@@ -100,48 +105,50 @@ public class ValidateBlock {
         return true;
     }
 
-    public static boolean validateChain(ArrayList<Block> blocks) throws Exception{
+    public static boolean validateChain(ArrayList<Block> blocks) throws Exception {
         String hashOfPrevBlockHeader = blocks.get(0).getHashOfRoot();
-        for(Block curBlock: blocks){
-            if (! curBlock.getHashPrevBlock().equals(hashOfPrevBlockHeader) ){    //if prevHash not matching false!
+        for (Block curBlock : blocks) {
+            if (!curBlock.getHashPrevBlock().equals(hashOfPrevBlockHeader)) { // if prevHash not matching false!
                 return false;
             }
-            if ( validateBlock(curBlock) == false){         //check if block is validated
+            if (validateBlock(curBlock) == false) { // check if block is validated
                 return false;
             }
-            hashOfPrevBlockHeader = curBlock.getHashOfRoot();   //update prevHash
+            hashOfPrevBlockHeader = curBlock.getHashOfRoot(); // update prevHash
         }
         return true;
     }
-    public static boolean validateBlock(Block b) throws Exception{
-        if ( b.getLedgerRoot().getContent().getHash().equals(b.getHashOfRoot()) == false){  //check if root was made correclty
+
+    public static boolean validateBlock(Block b) throws Exception {
+        if (b.getLedgerRoot().getContent().getHash().equals(b.getHashOfRoot()) == false) { // check if root was made
+                                                                                           // correclty
             System.out.println("Provided root is invalid for block @ time " + b.getTime());
             return false;
         }
         String hashInput = b.getHashOfRoot() + b.getNonce();
         BigInteger hashOutput = getSHAint(hashInput);
-        if ( b.curTarget.compareTo(hashOutput) >= 0 ){          //check if nonce was correcl
+        if (b.curTarget.compareTo(hashOutput) >= 0) { // check if nonce was correcl
             System.out.println("Nonce is invalid for block @ time " + b.getTime());
             return false;
         }
         return true;
     }
 
-    public static ArrayList<String> proveMembership(String accountNum){
-        // childNodeLeft = index * 2 
+    public static ArrayList<String> proveMembership(String accountNum) {
+        // childNodeLeft = index * 2
         // childNodeRight = index * 2 + 1
         ArrayList<String> hashes = new ArrayList<>();
         return hashes;
     }
 
-    //Return true if member
-    public static int getBalance(String accountNum){
-        //prove membership
-        //then return balance
+    // Return true if member
+    public static int getBalance(String accountNum) {
+        // prove membership
+        // then return balance
         return 0;
     }
 
-    public static String getSHA(String input) throws NoSuchAlgorithmException{
+    public static String getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] messageDigest = md.digest(input.getBytes());
         BigInteger no = new BigInteger(1, messageDigest);
@@ -153,13 +160,13 @@ public class ValidateBlock {
         return hashtext;
     }
 
-    private static ArrayList<Node> merkleTree(ArrayList<Node> children) throws Exception{
+    private static ArrayList<Node> merkleTree(ArrayList<Node> children) throws Exception {
         // edge case of 1 child
         if (children.size() == 1)
             return children;
         ArrayList<Node> parentList = new ArrayList<>();
         // iterate 2 at time through children to make a parent
-        for (int i = 0; i < children.size() -1; i += 2) {
+        for (int i = 0; i < children.size() - 1; i += 2) {
             Node left = children.get(i);
             Node right = children.get(i + 1);
             String parentHash = getSHA(left.getContent().getHash().concat(right.getContent().getHash()));
@@ -174,14 +181,15 @@ public class ValidateBlock {
         }
         return merkleTree(parentList);
     }
-    public static BigInteger getSHAint(String input) throws NoSuchAlgorithmException{
+
+    public static BigInteger getSHAint(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] messageDigest = md.digest(input.getBytes());
         BigInteger no = new BigInteger(1, messageDigest);
         return no;
     }
 
-    public static void menuRoutine(Scanner sc){
+    public static void menuRoutine(Scanner sc) {
         String input = "";
         int selection = 0;
         System.out.println("Select an Option Below:");
@@ -203,13 +211,13 @@ public class ValidateBlock {
             }
         } while (selection != 1 && selection != 2 && selection != 3);
 
-        if (selection == 1) {   //proof of membership
+        if (selection == 1) { // proof of membership
             System.out.println("[+] insert code for proof of membership here");
             System.exit(0);
-        } else if (selection == 2) { //get balance
+        } else if (selection == 2) { // get balance
             System.out.println("[+] insert code for get balance for account here");
             System.exit(0);
-        } else if (selection == 3) {    //quit
+        } else if (selection == 3) { // quit
             System.out.println("[+] Quitting program...");
             System.exit(0);
         }
