@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.print.event.PrintJobListener;
@@ -18,8 +20,9 @@ import java.math.BigInteger;
 import java.util.Scanner;
 
 public class ValidateBlock {
-    static ArrayList<Node> treeNodes = new ArrayList<Node>();  // holds each block's merkle tree in BFS order
+    static ArrayList<Node> treeNodes = new ArrayList<Node>();  // holds each block's merkle root in BFS order
     static ArrayList<Block> blocks = new ArrayList<Block>();   // holds each block 
+    //static HashMap<String, String> accounts =  new HashMap<String, String>();
     public static void main(String[] args) throws Exception {
         // ask user for input file
         Scanner input = new Scanner(System.in);
@@ -42,6 +45,11 @@ public class ValidateBlock {
                     return;
                 }
                 System.out.println("Blockcahin validated.");
+                System.out.println("Transactions on chain: \n"); // 
+                for(int i = 0; i < treeNodes.size(); i++){
+                    System.out.println("Block: " + i); // method 1
+                    System.out.println(printMerkleTree(treeNodes.get(i)));
+                }
                 bool = true;
                 menuRoutine(input); // do menu routine
     
@@ -102,6 +110,7 @@ public class ValidateBlock {
                     }
                     String address = splitted[0];
                     String balance = splitted[1];
+                    //System.out.println(address + " " + balance);
                     String hash = getSHA(address + balance);
                     Content curContent = new Content(hash, address, balance);
                     Node curNode = new Node(true, curContent, null, null);
@@ -113,7 +122,7 @@ public class ValidateBlock {
                 Block newBlock = new Block(hashOfPrevBlockHeader, hashOfRoot, timeAsInt, root, new BigInteger(targetBounString), nonce);
                 blocks.add(newBlock);  //holds each block
                 treeNodes.add(root);   // holds each blocks tree
-                System.out.println(printMerkleTree(root));
+                //System.out.println(printMerkleTree(root));
                 blockCounter += 1;
             }
         } catch (Exception e) {
@@ -163,10 +172,10 @@ public class ValidateBlock {
         for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
             Node curRoot = treeNodes.get(i);
             if ( getTreePath(curRoot, curPath, address)) {
-                System.out.println("path length " + curPath.size());
-                for( Node curNode : curPath){
-                    System.out.println(curNode.getContent().getHash());  //matches output
-                }
+                // System.out.println("path length " + curPath.size());
+                // for( Node curNode : curPath){
+                //     System.out.println(curNode.getContent().getHash());  //matches output
+                // }
                 return getFullPath(curPath, i);
             }
             curPath.clear();
@@ -366,7 +375,7 @@ public class ValidateBlock {
             return result;
         }
         if (root.getLeft() == null && root.getRight() == null){
-            result += (root.getContent().getAddress() + " " + root.getContent().getBalance()) ;
+            result += (root.getContent().getAddress() + " " + root.getContent().getBalance() + "\n") ;
         }
         result += printMerkleTree(root.getLeft());
         result += printMerkleTree(root.getRight());
