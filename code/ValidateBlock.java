@@ -23,21 +23,35 @@ public class ValidateBlock {
     public static void main(String[] args) throws Exception {
         // ask user for input file
         Scanner input = new Scanner(System.in);
-        System.out.println("Please print file name that holds blockchain");
-        String fileName = input.nextLine();
+        String fileName = "" ;
+        Boolean bool = false;
+
+        do {
+
+            try{
+                System.out.println("Please print file name that holds blockchain");
+                fileName = input.nextLine();
+    
+                if (readBlockChain(fileName) == false) {
+                    System.out.println("Invalid format. Blockchain could not be read");
+                    return;
+                }
+                System.out.println("Validating blockchain...");
+                if (validateChain(blocks) == false) {
+                    System.out.println("Invalid blockcahin. Blockchain is invalid");
+                    return;
+                }
+                System.out.println("Blockcahin validated.");
+                bool = true;
+                menuRoutine(input); // do menu routine
+    
+    
+            } catch (IOException e) {
+                System.out.println("[-] Error, file was not found. Please try again...");
+            }
+
+        } while(bool != true);
         
-        
-        if (readBlockChain(fileName) == false) {
-            System.out.println("Invalid format. Blockchain could not be read");
-            return;
-        }
-        System.out.println("Validating blockchain...");
-        if (validateChain(blocks) == false) {
-            System.out.println("Invalid blockcahin. Blockchain is invalid");
-            return;
-        }
-        System.out.println("Blockcahin validated.");
-        menuRoutine(input); // do menu routine
     }
 
     public static boolean readBlockChain(String filename) throws Exception {
@@ -311,7 +325,8 @@ public class ValidateBlock {
                     System.out.println(s);
                 }
             }
-            System.exit(0);
+            //System.exit(0);
+            menuRoutine(sc);
         } else if (selection == 2) { // get balance
             System.out.println("Enter address:");
             String address = sc.nextLine();
@@ -326,7 +341,8 @@ public class ValidateBlock {
                     System.out.println(s);
                 }
             }
-            System.exit(0);
+            //System.exit(0);
+            menuRoutine(sc);
         } else if (selection == 3) { // quit
             System.out.println("[+] Quitting program...");
             System.exit(0);
