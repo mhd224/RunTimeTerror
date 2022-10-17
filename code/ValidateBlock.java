@@ -62,9 +62,8 @@ public class ValidateBlock {
 
         try { // need 8 lines of header
             while (sc.hasNext()) { // each loops makes 1 block
-                String beginBlockLine = "";
-                beginBlockLine = sc.nextLine();
-                if (beginBlockLine == "") { // empty
+                String beginBlockLine = sc.nextLine();
+                if (beginBlockLine.equals("") ) { // empty
                     continue;
                 }
                 if (!beginBlockLine.equals("BEGIN BLOCK")) {
@@ -138,7 +137,7 @@ public class ValidateBlock {
             if (validateBlock(curBlock) == false) { // check if block is validated
                 return false;
             }
-            hashOfPrevBlockHeader = curBlock.getHeaderHash(); // update prevHash
+            hashOfPrevBlockHeader = curBlock.getHashPrevBlock(); // update prevHash
         }
         return true;
     }
@@ -151,7 +150,6 @@ public class ValidateBlock {
         }
         String hashInput = b.getHashOfRoot() + b.getNonce();
         BigInteger hashOutput = getSHAint(hashInput);
-
         if (b.curTarget.compareTo(hashOutput) <= 0) { // check if nonce was incorrect
             System.out.println("Nonce is invalid for block @ time " + b.getTime());
             return false;
