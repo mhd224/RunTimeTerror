@@ -17,13 +17,16 @@ import java.math.BigInteger;
 import java.util.Scanner;
 
 public class ValidateBlock {
+    static ArrayList<Node> treeNodes = new ArrayList<Node>();  // holds each block's merkle tree in BFS order
+    static ArrayList<Block> blocks = new ArrayList<Block>();   // holds each block 
     public static void main(String[] args) throws Exception {
         // ask user for input file
         Scanner input = new Scanner(System.in);
         System.out.println("Please print file name that hold blockchain");
         String fileName = input.nextLine();
-        ArrayList<Block> blocks = new ArrayList<Block>();
-        if (readBlockChain(fileName, blocks) == false) {
+        
+        
+        if (readBlockChain(fileName) == false) {
             System.out.println("Invalid format. Blockchain could not be read");
             return;
         }
@@ -36,7 +39,7 @@ public class ValidateBlock {
         menuRoutine(input); // do menu routine
     }
 
-    public static boolean readBlockChain(String filename, ArrayList<Block> blocks) throws Exception {
+    public static boolean readBlockChain(String filename) throws Exception {
         File file = new File(filename);
         Scanner sc = new Scanner(file);
         int blockCounter = 0;
@@ -89,12 +92,13 @@ public class ValidateBlock {
                     Node curNode = new Node(true, curContent, null, null);
                     nodes.add(curNode);
                 }
-                ArrayList<Node> merkleRoot = merkleTree(nodes);
-                Node root = merkleRoot.get(0);
+                ArrayList<Node> tree = merkleTree(nodes);
+                Node root = tree.get(0);
                 int timeAsInt = Integer.valueOf(time);
-                Block newBlock = new Block(hashOfPrevBlockHeader, hashOfRoot, timeAsInt, root,
-                        new BigInteger(targetBounString), nonce);
-                blocks.add(newBlock);
+                Block newBlock = new Block(hashOfPrevBlockHeader, hashOfRoot, timeAsInt, root, new BigInteger(targetBounString), nonce);
+                blocks.add(newBlock);  //holds each block
+                treeNodes.add(root);   // holds each blocks tree
+                System.out.println(printMerkleTree(root));
                 blockCounter += 1;
             }
         } catch (Exception e) {
@@ -128,7 +132,6 @@ public class ValidateBlock {
             System.out.println("Provided root is invalid for block @ time " + b.getTime());
             return false;
         }
-
         String hashInput = b.getHashOfRoot() + b.getNonce();
         BigInteger hashOutput = getSHAint(hashInput);
 
@@ -139,11 +142,47 @@ public class ValidateBlock {
         return true;
     }
 
-    public static ArrayList<String> proveMembership(String accountNum) {
-        // childNodeLeft = index * 2
-        // childNodeRight = index * 2 + 1
-        ArrayList<String> hashes = new ArrayList<>();
-        return hashes;
+    public static void proveMembership(String address) throws Exception{  // ArrayList<String>
+        int blockHoldingAddress = -1;
+        for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
+            Node curRoot = treeNodes.get(i);
+            if ( findInTree(curRoot, address)){
+                blockHoldingAddress = i;
+                break;
+            }
+        }
+        if(blockHoldingAddress == -1){
+            System.out.println("Address not found.");
+            //return hashes;
+        }
+        Node root = blocks.get(blockHoldingAddress).getLedgerRoot();
+        ArrayList<Node> curPath = new ArrayList<Node>();
+        curPath.add(root);
+        ArrayList<Node> path = getPath(curPath, address);
+        for(Node curNode : path){
+            System.out.println(curNode.getContent().getAddress());
+        }
+        //return getSiblingPath(curPath, blockHoldingAddress);
+    }
+
+    public static ArrayList<Node> getPath(ArrayList<Node> curPath, String address){
+        Node furthestNode = curPath.get( curPath.size() - 1);
+        Node leftOption = furthestNode.getLeft();
+        Node rightOption = furthestNode.getRight();
+
+        if (furthestNode.getContent().getAddress() == address){
+            return curPath;
+        }
+        if (leftOption != null){
+            curPath.add(leftOption);
+            getPath(curPath, address);
+        }
+        curPath.remove(furthestNode);  // left side failed
+        if (rightOption != null){
+            curPath.add(rightOption);
+            getPath(curPath, address);
+        }
+        return curPath;  // never gets here
     }
 
     // Return true if member
@@ -194,7 +233,7 @@ public class ValidateBlock {
         return no;
     }
 
-    public static void menuRoutine(Scanner sc) {
+    public static void menuRoutine(Scanner sc) throws Exception{
         String input = "";
         int selection = 0;
         System.out.println("Select an Option Below:");
@@ -217,7 +256,9 @@ public class ValidateBlock {
         } while (selection != 1 && selection != 2 && selection != 3);
 
         if (selection == 1) { // proof of membership
-            System.out.println("[+] insert code for proof of membership here");
+            System.out.println("Enter address:");
+            String address = sc.nextLine();
+            proveMembership(address);
             System.exit(0);
         } else if (selection == 2) { // get balance
             System.out.println("[+] insert code for get balance for account here");
@@ -226,5 +267,29 @@ public class ValidateBlock {
             System.out.println("[+] Quitting program...");
             System.exit(0);
         }
+    }
+    public static boolean findInTree(Node root, String address) throws Exception{
+        if (root == null){
+            return false;
+        }
+        System.out.println("SEARCHING FOR ADDRESS:" + root.getContent().getAddress());
+        if (root.getContent().getAddress().equals(address) ) {
+            return true;
+        }
+        boolean bool1 = findInTree(root.getLeft(), address );
+        boolean bool2 = findInTree(root.getRight(), address );
+        return bool1 || bool2;
+    }
+    public static String printMerkleTree(Node root) throws Exception{
+        String result = "";
+        if (root == null){
+            return result;
+        }
+        if (root.getLeft() == null && root.getRight() == null){
+            result += (root.getContent().getAddress() + " " + root.getContent().getBalance()) ;
+        }
+        result += printMerkleTree(root.getLeft());
+        result += printMerkleTree(root.getRight());
+        return result;
     }
 }

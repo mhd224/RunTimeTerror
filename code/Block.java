@@ -25,7 +25,7 @@ public class Block {
     private Node ledgerRoot;
     public BigInteger curTarget;
 
-    public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time ,Node ledgerRoot) throws NoSuchAlgorithmException{
+    public Block(String hashOfPrevBlockHeader, String hashOfRoot, int time , Node ledgerRoot) throws NoSuchAlgorithmException{
         this.hashOfPrevBlockHeader = hashOfPrevBlockHeader;
         this.hashOfRoot = hashOfRoot;
         this.time = time;
