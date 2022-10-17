@@ -235,7 +235,7 @@ public class ValidateBlock {
         res.add("Nonce "+ blocks.get(indexInBlock).getNonce() );
         res.add("HEADER END");
         res.add("BLOCK HASHES BEGIN");
-        for(int i = indexInBlock; i >= 0; i--){  // get hash of all blocks
+        for(int i = indexInBlock; i < blocks.size(); i++){  // get hash of all blocks
             res.add(blocks.get(i).getHeaderHash() ) ;
         }
         res.add("BLOCK HASHES END");
