@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -22,7 +23,7 @@ public class ValidateBlock {
     public static void main(String[] args) throws Exception {
         // ask user for input file
         Scanner input = new Scanner(System.in);
-        System.out.println("Please print file name that hold blockchain");
+        System.out.println("Please print file name that holds blockchain");
         String fileName = input.nextLine();
         
         
@@ -127,8 +128,7 @@ public class ValidateBlock {
     }
 
     public static boolean validateBlock(Block b) throws Exception {
-        if (b.getLedgerRoot().getContent().getHash().equals(b.getHashOfRoot()) == false) { // check if root was made
-                                                                                           // correclty
+        if (b.getLedgerRoot().getContent().getHash().equals(b.getHashOfRoot()) == false) { // check if root was made                                                                                         
             System.out.println("Provided root is invalid for block @ time " + b.getTime());
             return false;
         }
@@ -142,47 +142,69 @@ public class ValidateBlock {
         return true;
     }
 
-    public static void proveMembership(String address) throws Exception{  // ArrayList<String>
-        int blockHoldingAddress = -1;
+    public static ArrayList<String> proveMembership(String address) throws Exception{  // ArrayList<String>
+        ArrayList<Node> curPath = new ArrayList<Node>();
         for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
             Node curRoot = treeNodes.get(i);
-            if ( findInTree(curRoot, address)){
-                blockHoldingAddress = i;
-                break;
+            if ( getPath(curRoot, curPath, address)) {
+                System.out.println("path length " + curPath.size());
+                for( Node curNode : curPath){
+                    System.out.println(curNode.getContent().getHash());
+                }
+                return getFullPath(curPath, i);
             }
+            curPath.clear();
         }
-        if(blockHoldingAddress == -1){
-            System.out.println("Address not found.");
-            //return hashes;
-        }
-        Node root = blocks.get(blockHoldingAddress).getLedgerRoot();
-        ArrayList<Node> curPath = new ArrayList<Node>();
-        curPath.add(root);
-        ArrayList<Node> path = getPath(curPath, address);
-        for(Node curNode : path){
-            System.out.println(curNode.getContent().getAddress());
-        }
-        //return getSiblingPath(curPath, blockHoldingAddress);
+        System.out.println("not found");
+        return null;
     }
-
-    public static ArrayList<Node> getPath(ArrayList<Node> curPath, String address){
-        Node furthestNode = curPath.get( curPath.size() - 1);
-        Node leftOption = furthestNode.getLeft();
-        Node rightOption = furthestNode.getRight();
-
-        if (furthestNode.getContent().getAddress() == address){
-            return curPath;
+    public static boolean getPath(Node root, ArrayList<Node> curPath, String address){
+        if (root == null){
+            return false;
         }
-        if (leftOption != null){
-            curPath.add(leftOption);
-            getPath(curPath, address);
+        curPath.add(root);
+        if (root.getContent().getAddress().equals(address) ){
+            return true;
         }
-        curPath.remove(furthestNode);  // left side failed
-        if (rightOption != null){
-            curPath.add(rightOption);
-            getPath(curPath, address);
+        if( getPath(root.getLeft(), curPath, address) || getPath(root.getRight(), curPath, address)){
+            return true;
         }
-        return curPath;  // never gets here
+        curPath.remove(root);
+        return false;
+    }
+    public static ArrayList<String> getFullPath(ArrayList<Node> curPath, int indexInBlock) throws Exception{
+        ArrayList<String> res = new ArrayList<String>();
+        Node parent = curPath.get(0);
+        res.add("HASH-ROOT: " + parent.getContent().getHash());
+        Node child1; Node child2;
+        int count = 0;
+        for(int i = 1; i < curPath.size() - 1; i+= 2){
+            child1 = parent.getLeft();
+            child2 = parent.getRight();
+            if(child1 == curPath.get(i+1)){     //add searched for account LAST
+                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child2.getContent().getHash() + " " + child1.getContent().getHash();
+                res.add(str);
+            }
+            else{
+                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child1.getContent().getHash() + " " + child2.getContent().getHash();
+                res.add(str);
+            }
+            parent = curPath.get(i+1);
+        }
+        Collections.reverse(res);  //start from leaf, work way up
+        res.add("HEADER BEGIN");
+        res.add("Hash of previous block "+ blocks.get(indexInBlock).getHashPrevBlock()) ;
+        res.add("Hash of root " + blocks.get(indexInBlock).getHashOfRoot());
+        res.add("Time  " + String.valueOf(blocks.get(indexInBlock).getTime()) );
+        res.add("Difficulty target "+ blocks.get(indexInBlock).curTarget);
+        res.add("Nonce "+ blocks.get(indexInBlock).getNonce() );
+        res.add("HEADER END");
+        res.add("BLOCK HASHES BEGIN");
+        for(int i = indexInBlock; i >= 0; i--){  // get hash of all blocks
+            res.add(blocks.get(i).getHeaderHash() ) ;
+        }
+        res.add("BLOCK HASHES END");
+        return res;
     }
 
     // Return true if member
@@ -254,11 +276,19 @@ public class ValidateBlock {
                 menuRoutine(sc);
             }
         } while (selection != 1 && selection != 2 && selection != 3);
-
         if (selection == 1) { // proof of membership
             System.out.println("Enter address:");
             String address = sc.nextLine();
-            proveMembership(address);
+            ArrayList<String> res = proveMembership(address);
+            if (res == null){
+                System.out.println("Address not found");
+            }
+            else{
+                System.out.println("Proof of membership: ");
+                for(String s: res){
+                    System.out.println(s);
+                }
+            }
             System.exit(0);
         } else if (selection == 2) { // get balance
             System.out.println("[+] insert code for get balance for account here");
@@ -268,18 +298,7 @@ public class ValidateBlock {
             System.exit(0);
         }
     }
-    public static boolean findInTree(Node root, String address) throws Exception{
-        if (root == null){
-            return false;
-        }
-        System.out.println("SEARCHING FOR ADDRESS:" + root.getContent().getAddress());
-        if (root.getContent().getAddress().equals(address) ) {
-            return true;
-        }
-        boolean bool1 = findInTree(root.getLeft(), address );
-        boolean bool2 = findInTree(root.getRight(), address );
-        return bool1 || bool2;
-    }
+
     public static String printMerkleTree(Node root) throws Exception{
         String result = "";
         if (root == null){
