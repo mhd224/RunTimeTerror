@@ -54,6 +54,7 @@ public class ValidateBlock {
         
     }
 
+    //Helper function for reading a block chain
     public static boolean readBlockChain(String filename) throws Exception {
         File file = new File(filename);
         Scanner sc = new Scanner(file);
@@ -124,6 +125,7 @@ public class ValidateBlock {
         return true;
     }
 
+    //Helper function for validating a chain
     public static boolean validateChain(ArrayList<Block> blocks) throws Exception {
         // working backwards
         // blocks is in newest to oldest order
@@ -141,6 +143,7 @@ public class ValidateBlock {
         return true;
     }
 
+    //Helper function for validating a block
     public static boolean validateBlock(Block b) throws Exception {
         if (b.getLedgerRoot().getContent().getHash().equals(b.getHashOfRoot()) == false) { // check if root was made                                                                                         
             System.out.println("Provided root is invalid for block @ time " + b.getTime());
@@ -156,6 +159,7 @@ public class ValidateBlock {
         return true;
     }
 
+    //Helper function for proving membership
     public static ArrayList<String> proveMembership(String address) throws Exception{  // ArrayList<String>
         ArrayList<Node> curPath = new ArrayList<Node>();
         for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
@@ -169,9 +173,10 @@ public class ValidateBlock {
             }
             curPath.clear();
         }
-        //System.out.println("not found");
         return null;
     }
+
+    //Helper function for getTreePath
     public static boolean getTreePath(Node root, ArrayList<Node> curPath, String address){
         if (root == null){
             return false;
@@ -186,6 +191,8 @@ public class ValidateBlock {
         curPath.remove(root);
         return false;
     }
+
+    //Helper function for getFullPath
     public static ArrayList<String> getFullPath(ArrayList<Node> curPath, int indexInBlock) throws Exception{
         ArrayList<String> res = new ArrayList<String>();
         Node parent = curPath.get(0);
@@ -227,6 +234,7 @@ public class ValidateBlock {
         return res;
     }
 
+    //Helper function for getting the balance  (overloaded)
     // Return true if member
     public static String getBalance(String address) {  
         StringBuilder balance = new StringBuilder ();
@@ -239,6 +247,8 @@ public class ValidateBlock {
         }
         return "";
     }
+
+    //Helper function for getting the balance  (overloaded)
     public static void getBalance(Node root,String address, StringBuilder balance){
         if (root == null){
             return;
@@ -250,6 +260,7 @@ public class ValidateBlock {
         getBalance(root.getRight(), address, balance);
     }
 
+    //helper function for getting SHA hash test
     public static String getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] messageDigest = md.digest(input.getBytes());
@@ -262,6 +273,7 @@ public class ValidateBlock {
         return hashtext;
     }
 
+    //helper function for merkleTree
     private static ArrayList<Node> merkleTree(ArrayList<Node> children) throws Exception {
         // edge case of 1 child
         if (children.size() == 1)
@@ -284,6 +296,7 @@ public class ValidateBlock {
         return merkleTree(parentList);
     }
 
+    //Helper function for getting the SHA big integer
     public static BigInteger getSHAint(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] messageDigest = md.digest(input.getBytes());
@@ -291,6 +304,7 @@ public class ValidateBlock {
         return no;
     }
 
+    //Helper function for printing out the Menu Routine
     public static void menuRoutine(Scanner sc) throws Exception{
         String input = "";
         int selection = 0;
@@ -325,7 +339,6 @@ public class ValidateBlock {
                     System.out.println(s);
                 }
             }
-            //System.exit(0);
             menuRoutine(sc);
         } else if (selection == 2) { // get balance
             System.out.println("Enter address:");
@@ -341,7 +354,6 @@ public class ValidateBlock {
                     System.out.println(s);
                 }
             }
-            //System.exit(0);
             menuRoutine(sc);
         } else if (selection == 3) { // quit
             System.out.println("[+] Quitting program...");
@@ -349,6 +361,7 @@ public class ValidateBlock {
         }
     }
 
+    //Helper function to print out a Merkle Tree
     public static String printMerkleTree(Node root) throws Exception{
         String result = "";
         if (root == null){
