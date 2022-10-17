@@ -172,10 +172,10 @@ public class ValidateBlock {
         for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
             Node curRoot = treeNodes.get(i);
             if ( getTreePath(curRoot, curPath, address)) {
-                // System.out.println("path length " + curPath.size());
-                // for( Node curNode : curPath){
-                //     System.out.println(curNode.getContent().getHash());  //matches output
-                // }
+                System.out.println("path length " + curPath.size());
+                for( Node curNode : curPath){
+                    System.out.println(curNode.getContent().getHash());  //matches output
+                }
                 return getFullPath(curPath, i);
             }
             curPath.clear();
@@ -206,7 +206,7 @@ public class ValidateBlock {
         res.add("HASH-ROOT: " + parent.getContent().getHash());
         Node child1; Node child2;
         int count = 0;
-        for(int i = 1; i < curPath.size() - 1; i+= 1){
+        for(int i = 0; i < curPath.size() - 1; i+= 1){
             child1 = parent.getLeft();
             child2 = parent.getRight();
             String child2Hash = "null";
@@ -215,15 +215,16 @@ public class ValidateBlock {
                 child2Hash = child2.getContent().getHash();
             if (child1 != null)
                 child1Hash = child1.getContent().getHash();
-            if(child1 == curPath.get(i+1)){     //add searched for account LAST
-                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child2Hash + " " + child1Hash;
-                res.add(str);
-            }
-            else{
+            if( i != curPath.size() - 1 && child1 == curPath.get(i+1)){     //add searched for account LAST
                 String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child1Hash + " " + child2Hash;
                 res.add(str);
             }
-            parent = curPath.get(i+1);
+            else{
+                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child2Hash + " " + child1Hash;
+                res.add(str);
+            }
+            if (i != curPath.size() - 1 )  // only do this if there is any iteration
+                parent = curPath.get(i+1);
         }
         Collections.reverse(res);  //start from leaf, work way up
         res.add("HEADER BEGIN");
