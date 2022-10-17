@@ -146,19 +146,19 @@ public class ValidateBlock {
         ArrayList<Node> curPath = new ArrayList<Node>();
         for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
             Node curRoot = treeNodes.get(i);
-            if ( getPath(curRoot, curPath, address)) {
+            if ( getTreePath(curRoot, curPath, address)) {
                 System.out.println("path length " + curPath.size());
                 for( Node curNode : curPath){
-                    System.out.println(curNode.getContent().getHash());
+                    System.out.println(curNode.getContent().getHash());  //matches output
                 }
                 return getFullPath(curPath, i);
             }
             curPath.clear();
         }
-        System.out.println("not found");
+        //System.out.println("not found");
         return null;
     }
-    public static boolean getPath(Node root, ArrayList<Node> curPath, String address){
+    public static boolean getTreePath(Node root, ArrayList<Node> curPath, String address){
         if (root == null){
             return false;
         }
@@ -166,7 +166,7 @@ public class ValidateBlock {
         if (root.getContent().getAddress().equals(address) ){
             return true;
         }
-        if( getPath(root.getLeft(), curPath, address) || getPath(root.getRight(), curPath, address)){
+        if( getTreePath(root.getLeft(), curPath, address) || getTreePath(root.getRight(), curPath, address)){
             return true;
         }
         curPath.remove(root);
@@ -178,15 +178,21 @@ public class ValidateBlock {
         res.add("HASH-ROOT: " + parent.getContent().getHash());
         Node child1; Node child2;
         int count = 0;
-        for(int i = 1; i < curPath.size() - 1; i+= 2){
+        for(int i = 1; i < curPath.size() - 1; i+= 1){
             child1 = parent.getLeft();
             child2 = parent.getRight();
+            String child2Hash = "null";
+            String child1Hash = "null";
+            if (child2 != null)
+                child2Hash = child2.getContent().getHash();
+            if (child1 != null)
+                child1Hash = child1.getContent().getHash();
             if(child1 == curPath.get(i+1)){     //add searched for account LAST
-                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child2.getContent().getHash() + " " + child1.getContent().getHash();
+                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child2Hash + " " + child1Hash;
                 res.add(str);
             }
             else{
-                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child1.getContent().getHash() + " " + child2.getContent().getHash();
+                String str = "SIBLING PAIR " + String.valueOf(count++) + ": " + child1Hash + " " + child2Hash;
                 res.add(str);
             }
             parent = curPath.get(i+1);
@@ -208,10 +214,26 @@ public class ValidateBlock {
     }
 
     // Return true if member
-    public static int getBalance(String accountNum) {
-        // prove membership
-        // then return balance
-        return 0;
+    public static String getBalance(String address) {  
+        StringBuilder balance = new StringBuilder ();
+        for(int i = 0; i < blocks.size(); i++){      //go through each tree starting from trees[0]   (newest tree)
+            Node curRoot = treeNodes.get(i);
+            getBalance(curRoot, address, balance);
+            if (balance.length() != 0) {
+                return balance.toString();
+            }
+        }
+        return "";
+    }
+    public static void getBalance(Node root,String address, StringBuilder balance){
+        if (root == null){
+            return;
+        }
+        if (root.getContent().getAddress().equals(address) ){
+            balance.append(root.getContent().getBalance());
+        }
+        getBalance(root.getLeft(), address, balance);  
+        getBalance(root.getRight(), address, balance);
     }
 
     public static String getSHA(String input) throws NoSuchAlgorithmException {
@@ -291,7 +313,19 @@ public class ValidateBlock {
             }
             System.exit(0);
         } else if (selection == 2) { // get balance
-            System.out.println("[+] insert code for get balance for account here");
+            System.out.println("Enter address:");
+            String address = sc.nextLine();
+            ArrayList<String> res = proveMembership(address);
+            if (res == null){
+                System.out.println("Address not found");
+            }
+            else{
+                System.out.println("Balance: " + getBalance(address));
+                System.out.println("Proof of membership: ");
+                for(String s: res){
+                    System.out.println(s);
+                }
+            }
             System.exit(0);
         } else if (selection == 3) { // quit
             System.out.println("[+] Quitting program...");
