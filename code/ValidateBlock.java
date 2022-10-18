@@ -137,16 +137,27 @@ public class ValidateBlock {
     public static boolean validateChain(ArrayList<Block> blocks) throws Exception {
         // working backwards
         // blocks is in newest to oldest order
-        String hashOfPrevBlockHeader = blocks.get(0).getHashPrevBlock();
-        for (int i = 1; i < blocks.size(); i++) {
-            Block curBlock = blocks.get(i);
-            if (!curBlock.getHeaderHash().equals(hashOfPrevBlockHeader)) { // if prevHash not matching false!
+        String hashOfPrevBlockHeader = "0";   // 
+        Block curBlock = blocks.get(0);
+
+        if(blocks.size() > 1){
+            hashOfPrevBlockHeader = blocks.get(1).getHeaderHash();
+        }
+        int i;
+        for (i = 0; i < blocks.size() - 1; i++) {
+            curBlock = blocks.get(i);
+            if (!curBlock.getHashPrevBlock().equals(hashOfPrevBlockHeader)) { // if prevHash not matching false!
+                System.out.println("Hash of previous block corrupted at block " + i);
                 return false;
             }
             if (validateBlock(curBlock) == false) { // check if block is validated
+                System.out.println("Block corrupted (bad nonce or root) at block " + i);
                 return false;
             }
-            hashOfPrevBlockHeader = curBlock.getHashPrevBlock(); // update prevHash
+            hashOfPrevBlockHeader = blocks.get(i+1).getHashPrevBlock(); // update prevHash
+        }
+        if (validateBlock(blocks.get(i)) == false) { // check if block is validated
+            return false;
         }
         return true;
     }
@@ -383,3 +394,4 @@ public class ValidateBlock {
         return result;
     }
 }
+
