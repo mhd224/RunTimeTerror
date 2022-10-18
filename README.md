@@ -20,6 +20,12 @@ sh run.sh
 - when running non-fail files, use the menu to perform Proof of Membership or Get Balance operations
 - all output will be in terminal/shell
 
+### Testing Failed Inputs
+- h5input3fail.txt: Changed hash of previous head
+- h5input4fail.txt: Changed hash of previous head
+- h5input5fail.txt: Changed the root of any block
+- h5input6fail.txt: Changed the nonce of any block
+
 ## Proof of Membership Notes
 - Program returns the sibling pairs starting from the leaf to the root and “provides the header and hash of that block and the block hashes forward in time from that block to the most recent block”
 - Pair1 corresponds to the primary node on path, Pair2 corresponds to the sibling

@@ -44,7 +44,7 @@ public class ValidateBlock {
                     System.out.println("Invalid blockcahin. Blockchain is invalid");
                     return;
                 }
-                System.out.println("Blockcahin validated.");
+                System.out.println("Blockchain validated.");
                 System.out.println("Transactions on chain: \n"); // 
                 for(int i = 0; i < treeNodes.size(); i++){
                     System.out.println("Block: " + i); // method 1
