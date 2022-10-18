@@ -17,6 +17,7 @@ sh run.sh
 - enter test file names (there are n provided test file names labelled h5input[1-n].txt or h5input[1-n]fail.txt)
     - NOTE: the test files are located within the code/ directory, keep that in mind when entering the file names into the program (USE: code/h5input[1-5].txt)
     - enter a single file
+    - additional test suite: [code/failNonceOf0.txt , code/failRootCorrupted.txt , code/failPrevHashValCorrupted.txt]
 - when running non-fail files, use the menu to perform Proof of Membership or Get Balance operations
 - all output will be in terminal/shell
 
