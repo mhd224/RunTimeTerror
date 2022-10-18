@@ -12,6 +12,19 @@ the code can be compiled, and run in the same step by executing the command:
 sh run.sh
 ```
 
+## Usage Instructions for Homework 5
+- compile and run the code using the two commands above
+- enter test file names (there are n provided test file names labelled h5input[1-n].txt or h5input[1-n]fail.txt)
+    - NOTE: the test files are located within the code/ directory, keep that in mind when entering the file names into the program (USE: code/h5input[1-5].txt)
+    - enter a single file
+- when running non-fail files, use the menu to perform Proof of Membership or Get Balance operations
+- 
+
+## Proof of Membership Notes
+- Program returns the sibling pairs starting from the leaf to the root and “provides the header and hash of that block and the block hashes forward in time from that block to the most recent block”
+- Pair1 corresponds to the primary node on path, Pair2 corresponds to the sibling
+- 	For null nodes, hash of parent equals hash of non-null sibling (no rehashing)
+
 ## Usage Instructions for Homework 4
 - compile and run the code using the two commands above
 - enter test file names (there are 5 provided test file names labelled input[1-5].txt)
@@ -22,6 +35,7 @@ sh run.sh
 - enter 'y' or 'n' when prompted if you would like to print the ledger or not. (YES = y / NO = n)
 - to view the result, open up 'input1.block.out' located in the code/ directory to view the list of blocks beginning with the last block (in required print format) and displays the complete address/balance list
     - NOTE: if you decide to use your own input testing files, the name of the outputted file will be in the format 'FIRST_INPUT_FILE_NAME.block.out' instead of 'input1.block.out'
+
 
 
 
