@@ -18,7 +18,7 @@ sh run.sh
     - NOTE: the test files are located within the code/ directory, keep that in mind when entering the file names into the program (USE: code/h5input[1-5].txt)
     - enter a single file
 - when running non-fail files, use the menu to perform Proof of Membership or Get Balance operations
-- 
+- all output will be in terminal/shell
 
 ## Proof of Membership Notes
 - Program returns the sibling pairs starting from the leaf to the root and “provides the header and hash of that block and the block hashes forward in time from that block to the most recent block”
